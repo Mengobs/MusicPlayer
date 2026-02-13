@@ -416,67 +416,158 @@ window.addEventListener('resize', () => {
 
 updateLyrics();
 */
-function getDominantColors(imageData, colorCount = 5, minColorDistance = 100) {
+function getDominantColors(imageData, colorCount = 4, minColorDistance = 60) {
     const pixels = imageData.data;
-    const sampledColors = []; // 存储采样后的颜色（未去重）
-    const dominantColors = []; // 最终返回的主色调（去重后）
-
-    // 1. 每隔 16 个像素采样一次（减少计算量）
-    for (let i = 0; i < pixels.length; i += 4 * 13) {
-        const r = pixels[i];
-        const g = pixels[i + 1];
-        const b = pixels[i + 2];
-        sampledColors.push([r, g, b]);
-    }
-
-    sampledColors.forEach(([r, g, b]) => {
-        const isUnique = dominantColors.every(([er, eg, eb]) => {
-            const distance = Math.sqrt((r - er) ** 2 + (g - eg) ** 2 + (b - eb) ** 2);
-            return distance >= minColorDistance; // 颜色差异足够大才保留
-        });
-
-        if (isUnique) {
-            dominantColors.push([r, g, b]);
-            if (dominantColors.length >= colorCount) return; // 提前终止
+    const { width, height } = imageData;
+    const regionColors = [];
+    const dominantColors = [];
+    
+    const halfWidth = Math.floor(width / 2);
+    const halfHeight = Math.floor(height / 2);
+    const step = 5; // 缩小步长提高采样精度
+    
+    const regions = [
+        { x1: 0, y1: 0, x2: halfWidth, y2: halfHeight },
+        { x1: halfWidth, y1: 0, x2: width, y2: halfHeight },
+        { x1: 0, y1: halfHeight, x2: halfWidth, y2: height },
+        { x1: halfWidth, y1: halfHeight, x2: width, y2: height }
+    ];
+    
+    regions.forEach(region => {
+        let totalR = 0, totalG = 0, totalB = 0, pixelCount = 0;
+        for (let y = region.y1; y < region.y2; y += step) {
+            for (let x = region.x1; x < region.x2; x += step) {
+                const i = (y * width + x) * 4;
+                totalR += pixels[i]; totalG += pixels[i+1]; totalB += pixels[i+2];
+                pixelCount++;
+            }
         }
-
-        console.log(r, g, b)
+        if (pixelCount > 0) {
+            regionColors.push([Math.round(totalR/pixelCount), Math.round(totalG/pixelCount), Math.round(totalB/pixelCount)]);
+        }
     });
 
-    return dominantColors.map(([r, g, b]) => `rgba(${r},${g},${b},0.9)`);
+    // 去重逻辑
+    regionColors.forEach(([r, g, b]) => {
+        const isUnique = dominantColors.every(([er, eg, eb]) => {
+            return Math.sqrt((r-er)**2 + (g-eg)**2 + (b-eb)**2) >= minColorDistance;
+        });
+        if (isUnique) dominantColors.push([r, g, b]);
+    });
+
+    // 补齐颜色：如果提取的不够 4 个，循环填充
+    while (dominantColors.length < colorCount) {
+        dominantColors.push(dominantColors[dominantColors.length % dominantColors.length] || [128, 128, 128]);
+    }
+
+    return dominantColors.map(([r, g, b]) => `rgba(${r},${g},${b},0.8)`);
 }
 
+// 定义切片类，处理旋转和绘制 (Made by Gemini)
+class Slice {
+    constructor(img, index, canvas) {
+        this.img = img;
+        this.index = index; // 0, 1, 2, 3 对应四个象限
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        
+        // 随机初始角度和旋转速度
+        this.angle = Math.random() * Math.PI * 2;
+        this.velocity = (Math.random() - 0.5) * 0.005; // 旋转速度，控制流动的快慢
+        
+        // 放大倍数，确保旋转时不会露出切片边缘
+        this.scale = 2.5; 
+    }
+
+    update() {
+        this.angle += this.velocity;
+    }
+
+    draw() {
+        const { width, height } = this.canvas;
+        const ctx = this.ctx;
+
+        // 计算当前切片在画布上的中心点 (2x2 布局)
+        const centerX = (this.index % 2 === 0) ? width * 0.25 : width * 0.75;
+        const centerY = (this.index < 2) ? height * 0.25 : height * 0.75;
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(this.angle);
+        ctx.scale(this.scale, this.scale);
+
+        // 从原图中裁切对应的 1/4 区域
+        const sw = this.img.width / 2;
+        const sh = this.img.height / 2;
+        const sx = (this.index % 2) * sw;
+        const sy = Math.floor(this.index / 2) * sh;
+
+        // 绘制到画布上，适当偏移中心以重叠融合
+        const drawSize = Math.max(width, height) * 0.6;
+        ctx.globalAlpha = 0.7; // 增加透明度让颜色叠加更柔和
+        ctx.drawImage(this.img, sx, sy, sw, sh, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+        ctx.restore();
+    }
+}
+
+let animationId = null;
+let slices = [];
+
 bgImg.onload = () => {
-    justSvg.style.display = "none";
+    // 1. 原有的 DOM 和 样式逻辑
+    if (typeof justSvg !== 'undefined') justSvg.style.display = "none";
     svgcontainer.style.background = `url(${bgImg.src})`;
     svgcontainer.style.backgroundSize = "cover";
     svgcontainer.style.backgroundPosition = "center";
-    svgcontainer.style.backgroundRepeat = "no-repeat";
 
-    const tempCanvas = document.createElement('canvas')
-    const tempCtx = tempCanvas.getContext('2d')
-
-    tempCanvas.width = 100
-    tempCanvas.height = 100 * (bgImg.height / bgImg.width)
-
-    tempCtx.drawImage(bgImg, 0, 0, tempCanvas.width, tempCanvas.height)
-    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+    // 2. 提取颜色并设置 CSS 变量 (保持你原有的逻辑)
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCanvas.width = 100;
+    tempCanvas.height = 100 * (bgImg.height / bgImg.width);
+    tempCtx.drawImage(bgImg, 0, 0, tempCanvas.width, tempCanvas.height);
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
 
     let colors = getDominantColors(imageData);
-    document.body.style.setProperty('--background', colors[0]);
-    document.body.style.setProperty('--color1', colors[0]);
-    document.body.style.setProperty('--color2', colors[1]);
-    document.body.style.setProperty('--color3', colors[2]);
-    document.body.style.setProperty('--color4', colors[3]);
-    document.body.style.setProperty('--color5', colors[4]);
-    document.body.style.setProperty('--color1-rgba', colors[0].replace("0.9", "0"));
-    document.body.style.setProperty('--color2-rgba', colors[1].replace("0.9", "0"));
-    document.body.style.setProperty('--color3-rgba', colors[2].replace("0.9", "0"));
-    document.body.style.setProperty('--color4-rgba', colors[3].replace("0.9", "0"));
-    document.body.style.setProperty('--color5-rgba', colors[4].replace("0.9", "0"));
-}
+    // 设置 CSS 变量
+    colors.forEach((col, i) => {
+        document.body.style.setProperty(`--color${i + 1}`, col);
+        document.body.style.setProperty(`--color${i + 1}-rgba`, col.replace("0.9", "0.3"));
+    });
 
+    // 3. 初始化流动背景 Canvas
+    const fluidCanvas = document.getElementById('fluid-canvas'); // 确保 HTML 有此 ID
+    const fCtx = fluidCanvas.getContext('2d');
+    
+    // 适配屏幕尺寸
+    const resize = () => {
+        fluidCanvas.width = window.innerWidth;
+        fluidCanvas.height = window.innerHeight;
+    };
+    window.onresize = resize;
+    resize();
 
+    // 创建 4 个切片实例
+    slices = [0, 1, 2, 3].map(i => new Slice(bgImg, i, fluidCanvas));
+
+    // 4. 动画循环
+    if (animationId) cancelAnimationFrame(animationId);
+    
+    function animate() {
+        // 使用 screen 混合模式让颜色叠加时产生明亮的流体感
+        fCtx.clearRect(0, 0, fluidCanvas.width, fluidCanvas.height);
+        fCtx.globalCompositeOperation = 'screen'; 
+        
+        slices.forEach(slice => {
+            slice.update();
+            slice.draw();
+        });
+        
+        animationId = requestAnimationFrame(animate);
+    }
+    
+    animate();
+};
 
 // 新增的函数
 

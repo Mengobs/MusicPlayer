@@ -6,74 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicPlayer Like AM</title>
     <link rel="stylesheet" href="./index.css" />
-    <style>
-        :root {
-            --icon: rgba(60, 60, 67, 0.18);
-            color-scheme: light dark;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --icon: rgba(235, 235, 245, 0.16);
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <div class="main">
-        <div class="leftcontent">
-            <div>
-                <div class="svgcontainer">
-                    <div class="svg">
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-                            <g fill="none" fill-rule="evenodd">
-                                <path fill="var(--genericJoeColor)" d="M0 0h100v100H0z"></path>
-                                <path fill="var(--icon)"
-                                    d="M34.098 73.66c3.256 0 8.153-2.404 8.153-8.873v-21c0-1.146.202-1.393 1.235-1.596L61.5 38.485c1.146-.247 1.595.045 1.595 1.078l.157 14.083c0 1.146-.584 1.865-1.64 2.09l-3.346.74c-4.493.966-6.694 3.078-6.694 6.447 0 3.347 2.718 5.795 6.424 5.795 3.257 0 8.064-2.291 8.064-8.738V28.76c0-2.112-.966-2.763-3.392-2.291l-21.27 4.402c-1.483.292-2.27 1.1-2.27 2.381l.136 25.358c0 1.056-.494 1.775-1.438 1.954l-3.504.72c-4.447.943-6.558 3.166-6.558 6.603 0 3.391 2.628 5.772 6.334 5.772Z"
-                                    fill-rule="nonzero"></path>
-                            </g>
-                        </svg>
-                    </div>
-                </div>
-                <div class="time">
-                    <p class="start">0:00</p>
-                    <p class="name"></p>
-                    <p class="end">-0:00</p>
-                </div>
-                <div class="processbar">
-                    <div class="process"></div>
-                </div>
-                <div class="conbox">
-                    <div class="controls">
-                        <div class="play">
-                            <svg viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" style="filter: brightness(1.2)">
-                                <path
-                                    d="M10.345 23.287c.415 0 .763-.15 1.22-.407l12.742-7.404c.838-.481 1.178-.855 1.178-1.46 0-.599-.34-.972-1.178-1.462L11.565 5.158c-.457-.265-.805-.407-1.22-.407-.789 0-1.345.606-1.345 1.57V21.71c0 .971.556 1.577 1.345 1.577z"
-                                    fill-rule="nonzero" fill="#c1c1c1"></path>
-                            </svg>
-                        </div>
-                        <div class="pause">
-                            <svg viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" style="filter: brightness(1.2)">
-                                <path
-                                    d="M13.293 22.772c.955 0 1.436-.481 1.436-1.436V6.677c0-.98-.481-1.427-1.436-1.427h-2.457c-.954 0-1.436.473-1.436 1.427v14.66c-.008.954.473 1.435 1.436 1.435h2.457zm7.87 0c.954 0 1.427-.481 1.427-1.436V6.677c0-.98-.473-1.427-1.428-1.427h-2.465c-.955 0-1.428.473-1.428 1.427v14.66c0 .954.473 1.435 1.428 1.435h2.465z"
-                                    fill-rule="nonzero" fill="#c1c1c1"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="leftcontent">
+        <div class="svgcontainer">
+            <div class="svg"></div>
         </div>
-        <div class="rightcontent">
-            <div class="lyricscontainer">
-                <div class="lyrics">
-                    <p class="lyric highlight">点击音乐图标选择音频、封面和lrc文件</p>
+        <div class="time">
+            <p class="start">0:00</p>
+            <p class="name"></p>
+            <p class="end">-0:00</p>
+        </div>
+        <div class="processbar">
+            <div class="process"></div>
+        </div>
+        <div class="conbox">
+            <div class="controls">
+                <div class="play">
+                    <svg viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" style="filter: brightness(1.2)">
+                        <path
+                            d="M10.345 23.287c.415 0 .763-.15 1.22-.407l12.742-7.404c.838-.481 1.178-.855 1.178-1.46 0-.599-.34-.972-1.178-1.462L11.565 5.158c-.457-.265-.805-.407-1.22-.407-.789 0-1.345.606-1.345 1.57V21.71c0 .971.556 1.577 1.345 1.577z"
+                            fill-rule="nonzero" fill="#c1c1c1"></path>
+                    </svg>
+                </div>
+                <div class="pause">
+                    <svg viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" style="filter: brightness(1.2)">
+                        <path
+                            d="M13.293 22.772c.955 0 1.436-.481 1.436-1.436V6.677c0-.98-.481-1.427-1.436-1.427h-2.457c-.954 0-1.436.473-1.436 1.427v14.66c-.008.954.473 1.435 1.436 1.435h2.457zm7.87 0c.954 0 1.427-.481 1.427-1.436V6.677c0-.98-.473-1.427-1.428-1.427h-2.465c-.955 0-1.428.473-1.428 1.427v14.66c0 .954.473 1.435 1.428 1.435h2.465z"
+                            fill-rule="nonzero" fill="#c1c1c1"></path>
+                    </svg>
                 </div>
             </div>
         </div>
     </div>
+    <div class="rightcontent">
+        <div class="lyricscontainer">
+            <div class="lyrics">
+                <div class="item"><p>点击音乐图标选择音频、封面和lrc文件</p></div>
+            </div>
+        </div>
+    </div>
 
-    <div class="background"></div>
+    <!-- <div class="background"></div> -->
+    <canvas id="fluid-canvas"></canvas>
 
     <input type="file" accept="audio/* text/* image/* .lrc" class="audiofile" multiple />
     <audio class="player"></audio>
