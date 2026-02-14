@@ -190,15 +190,20 @@ p {
     position: relative;
     z-index: 2;
     -webkit-mask-image: linear-gradient(to bottom,
-            transparent 0%,
-            black 30%,
-            black 70%,
-            transparent 100%);
+            transparent,
+            black 35%,
+            black 65%,
+            transparent);
     mask-image: linear-gradient(to bottom,
-            transparent 0%,
-            black 30%,
-            black 70%,
-            transparent 100%);
+            transparent,
+            black 35%,
+            black 65%,
+            transparent);
+    /* background-image: linear-gradient(to bottom,
+            transparent,
+            black 35%,
+            black 65%,
+            transparent); */
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
 }

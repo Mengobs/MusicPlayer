@@ -495,7 +495,7 @@ class Slice {
         this.velocity = (Math.random() - 0.5) * 0.005; // 旋转速度，控制流动的快慢
 
         // 放大倍数，确保旋转时不会露出切片边缘
-        this.scale = 1;
+        this.scale = 1.2;
     }
 
     update() {
@@ -523,7 +523,7 @@ class Slice {
 
         // 绘制到画布上，适当偏移中心以重叠融合
         const drawSize = Math.max(width, height) * 0.6;
-        ctx.globalAlpha = 1; // 增加透明度让颜色叠加更柔和
+        ctx.globalAlpha = 0.7; // 增加透明度让颜色叠加更柔和
         ctx.drawImage(this.img, sx, sy, sw, sh, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
         ctx.restore();
     }
