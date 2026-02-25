@@ -41,11 +41,8 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    /* -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px); */
     z-index: 2;
     margin: 0;
-    /* background: #e8e8e8; */
 }
 
 .main {
@@ -61,7 +58,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     width: 50vw;
     height: 100vh;
 }
@@ -124,7 +120,6 @@ input[type="file"] {
     height: 100%;
     background: #fff;
     border-radius: 100px;
-    /* box-shadow: 0 0 3px #0009; */
 }
 
 .time {
@@ -229,35 +224,23 @@ body:not(.no-files) .leftcontent {
             black 35%,
             black 65%,
             transparent);
-    /* background-image: linear-gradient(to bottom,
-            transparent,
-            black 35%,
-            black 65%,
-            transparent); */
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
 }
 
 .lyrics {
     max-width: 100%;
-    /* font-size: 24px; */
-    /* line-height: 40px; */
     z-index: 2;
 }
 
 .lyrics>.item {
     position: absolute;
     padding: 25px;
-
     box-sizing: border-box;
-
     background-color: transparent;
     border-radius: 15px;
     color: rgba(255, 255, 255, 0.2);
     line-height: 250%;
-
-    /*transition-timing-function: cubic-bezier(.19,.11,0,1);
-    transition: transform 0.5s;*/
 }
 
 .lyrics>.item>p {
@@ -266,68 +249,6 @@ body:not(.no-files) .leftcontent {
     word-wrap: break-word;
     letter-spacing: 0.6px;
 }
-
-/*
-.lyrics p {
-    position: relative;
-    margin: 0;
-    margin: 4% 0;
-    will-change: opacity, font-weight, margin-left, margin-top, margin-bottom, transform;
-    transition: opacity 0.75s cubic-bezier(0.25, 0.8, 0.25, 1),
-      
-        font-weight 0.75s cubic-bezier(0.25, 0.8, 0.25, 1),
-        margin-left 0.75s cubic-bezier(0.25, 0.8, 0.25, 1),
-        margin-top 0.6s cubic-bezier(.01,1.22,.97,1.12),
-        margin-bottom 1s cubic-bezier(0.25, 0.8, 0.25, 1),
-        transform 0.75s cubic-bezier(0.25, 0.8, 0.25, 1);
-    width: 100%;
-    font-weight: normal;
-    font-size: inherit;
-    margin-top: 4%;
-    font-size: 36px;
-    text-shadow: -1px 1px 20px #0009, 0 1px 5px #0009;
-    align-self: flex-start;
-    transform: matrix(1, 0, 0, 1, 0, 0);
-    transform-origin: 0px 50%;
-    word-wrap: break-word;
-    white-space: normal;
-    color: #fff;
-    opacity: 0.3;
-    -webkit-background-clip: text;
-    background-clip: text;
-    z-index: 2;
-}
-
-.lyrics p.highlight {
-    margin: 5% 0;
-    font-weight: bold;
-    filter: none;
-    margin-top: 4%;
-    opacity: 0.9;
-    transform: matrix(1.2, 0, 0, 1.2, 0, 0);
-    background-size: 100% 100%, 100% 100%;
-    transform-origin: 0px 50%;
-    word-wrap: break-word;
-    white-space: normal;
-    font-family: "SFPro-Semibold", "PingFangSC-Semibold";
-}
-*/
-/* .lyrics p::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 3;
-    color: #fff;
-    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-    transition: clip-path var(--type-time) linear;
-}
-
-.lyrics p.highlight::after {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-} */
 
 .background {
     margin: 0;
@@ -442,4 +363,114 @@ body:not(.no-files) .leftcontent {
     filter: blur(30px) saturate(2.5) brightness(0.6);
     pointer-events: none;
     background-color: #000;
+}
+
+/* 搜索框样式,能看就行 */
+#search_container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-family: inherit;
+}
+
+#search_trigger {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#search_trigger:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+#search_dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 260px;
+    max-height: 360px;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+#search_dropdown.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+#search_input {
+    width: 100%;
+    padding: 12px 15px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-sizing: border-box;
+}
+
+#search_input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#search_results {
+    overflow-y: auto;
+    max-height: 280px;
+    padding: 6px 0;
+}
+
+.search-result-item {
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.search-result-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.search-result-item .song-name {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.search-result-item .artist-name {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-loading,
+.search-error,
+.search-no-result {
+    padding: 15px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
 }
